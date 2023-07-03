@@ -1,0 +1,48 @@
+{
+    "name": "vodo",
+    "postCreateCommand": ".devcontainer/post-create-command.sh",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "aaron-bond.better-comments",
+                "bierner.emojisense",
+                "bierner.github-markdown-preview",
+                "bierner.markdown-checkbox",
+                "bierner.markdown-emoji",
+                "bierner.markdown-footnotes",
+                "bierner.markdown-mermaid",
+                "bierner.markdown-preview-github-styles",
+                "bierner.markdown-yaml-preamble",
+                "bungcip.better-toml",
+                "christian-kohler.path-intellisense",
+                "DavidAnson.vscode-markdownlint",
+                "eamodio.gitlens",
+                "equinusocio.vsc-material-theme-icons",
+                "foxundermoon.shell-format",
+                "GitHub.codespaces",
+                "GitHub.copilot",
+                "GitHub.copilot-chat",
+                "GitHub.github-vscode-theme",
+                "GitHub.remotehub",
+                "GitHub.vscode-codeql",
+                "github.vscode-github-actions",
+                "GitHub.vscode-pull-request-github",
+                "hbenl.vscode-test-explorer",
+                "humao.rest-client",
+                "ms-vscode.hexeditor",
+                "ms-vscode.remote-repositories",
+                "ms-vscode.test-adapter-converter",
+                "ms-vsliveshare.vsliveshare",
+                "ms-vsliveshare.vsliveshare-pack",
+                "pnp.polacode",
+                "quicktype.quicktype",
+                "redhat.vscode-yaml",
+                "rust-lang.rust-analyzer",
+                "tombonnike.vscode-status-bar-format-toggle",
+                "vadimcn.vscode-lldb",
+                "waderyan.gitblame",
+                "yzhang.markdown-all-in-onev"
+            ]
+        }
+    }
+}
