@@ -1,6 +1,6 @@
 {
     "name": "vodo",
-    "postCreateCommand": ".devcontainer/post-create-command.sh",
+    "image": "mcr.microsoft.com/devcontainers/rust:latest",
     "customizations": {
         "vscode": {
             "extensions": [
@@ -41,7 +41,7 @@
                 "tombonnike.vscode-status-bar-format-toggle",
                 "vadimcn.vscode-lldb",
                 "waderyan.gitblame",
-                "yzhang.markdown-all-in-onev"
+                "yzhang.markdown-all-in-one"
             ]
         }
     }
