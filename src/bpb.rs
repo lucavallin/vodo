@@ -8,6 +8,8 @@ pub enum BufferError {
     JumpsLimitExceeded(i32),
 }
 
+// The `BytePacketBuffer` struct is used to hold the contents of a DNS packet as a byte buffer,
+// and provides methods for reading and manipulating the buffer contents.
 pub struct BytePacketBuffer {
     pub buf: [u8; 512],
     pub pos: usize,
@@ -113,7 +115,7 @@ impl BytePacketBuffer {
             // can craft a packet with a cycle in the jump instructions. This guards
             // against such packets.
             if jumps_performed > max_jumps {
-                return Err(BufferError::JumpsLimitExceeded(max_jumps).into());
+                return Err(BufferError::JumpsLimitExceeded(max_jumps));
             }
 
             // At this point, we're always at the beginning of a label. Recall

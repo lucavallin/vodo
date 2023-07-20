@@ -1,6 +1,22 @@
 use crate::bpb::{BytePacketBuffer, Result};
 use crate::rc::ResultCode;
 
+// This struct represents the DNS header and contains the following fields:
+// - id: a 16-bit identifier assigned by the program that generates any kind of query or response
+// - recursion_desired: a 1-bit field that specifies whether recursive query support is desired
+// - truncated_message: a 1-bit field that specifies that this message was truncated due to length greater than that permitted on the transmission channel
+// - authoritative_answer: a 1-bit field that specifies that the responding name server is an authority for the domain name in question section
+// - opcode: a 4-bit field that specifies kind of query in this message
+// - response: a 1-bit field that specifies whether this message is a response to a query or a query
+// - rescode: a 4-bit field that specifies the response code
+// - checking_disabled: a 1-bit field that specifies whether checking of query and response is disabled or not
+// - authed_data: a 1-bit field that specifies whether all data in the response is authenticated
+// - z: a 1-bit field that must be zero in all queries and responses
+// - recursion_available: a 1-bit field that specifies whether recursive query support is available in the name server
+// - questions: a 16-bit field that specifies the number of entries in the question section
+// - answers: a 16-bit field that specifies the number of resource records in the answer section
+// - authoritative_entries: a 16-bit field that specifies the number of name server resource records in the authority records section
+// - resource_entries: a 16-bit field that specifies the number of resource records in the additional records section
 #[derive(Clone, Debug)]
 pub struct DnsHeader {
     pub id: u16, // 16 bits
@@ -47,6 +63,10 @@ impl DnsHeader {
         }
     }
 
+    // This function reads the DNS header fields from a given BytePacketBuffer and updates the fields of the DnsHeader struct accordingly.
+    // It reads the id, flags, rescode, questions, answers, authoritative_entries, and resource_entries fields from the buffer.
+    // It then updates the corresponding fields in the DnsHeader struct with the values read from the buffer.
+    // Finally, it returns a Result indicating whether the read was successful or not.
     pub fn read(&mut self, buffer: &mut BytePacketBuffer) -> Result<()> {
         self.id = buffer.read_u16()?;
 
