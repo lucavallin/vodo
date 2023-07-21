@@ -6,6 +6,8 @@ pub enum BufferError {
     EndOfBuffer,
     #[error("Limit of {0} jumps exceeded")]
     JumpsLimitExceeded(i32),
+    #[error("Single label exceeds 63 characters of length")]
+    LabelTooLong,
 }
 
 // The `PacketBuffer` struct is used to hold the contents of a DNS packet as a byte buffer,
@@ -26,7 +28,7 @@ impl PacketBuffer {
     }
 
     /// Current position within buffer
-    fn pos(&self) -> usize {
+    pub fn pos(&self) -> usize {
         self.pos
     }
 
@@ -173,6 +175,58 @@ impl PacketBuffer {
         if !jumped {
             self.seek(pos)?;
         }
+
+        Ok(())
+    }
+
+    // The write function writes a single byte to the buffer at the current position.
+    // If the buffer is already full, it returns an EndOfBuffer error.
+    pub fn write(&mut self, val: u8) -> Result<(), BufferError> {
+        if self.pos >= 512 {
+            return Err(BufferError::EndOfBuffer);
+        }
+        self.buf[self.pos] = val;
+        self.pos += 1;
+        Ok(())
+    }
+
+    pub fn write_u8(&mut self, val: u8) -> Result<(), BufferError> {
+        self.write(val)?;
+
+        Ok(())
+    }
+
+    pub fn write_u16(&mut self, val: u16) -> Result<(), BufferError> {
+        self.write((val >> 8) as u8)?;
+        self.write((val & 0xFF) as u8)?;
+
+        Ok(())
+    }
+
+    pub fn write_u32(&mut self, val: u32) -> Result<(), BufferError> {
+        self.write(((val >> 24) & 0xFF) as u8)?;
+        self.write(((val >> 16) & 0xFF) as u8)?;
+        self.write(((val >> 8) & 0xFF) as u8)?;
+        self.write(((val >> 0) & 0xFF) as u8)?;
+
+        Ok(())
+    }
+
+    // write_qname writes query names in labeled form
+    pub fn write_qname(&mut self, qname: &str) -> Result<(), BufferError> {
+        for label in qname.split('.') {
+            let len = label.len();
+            if len > 0x3f {
+                return Err(BufferError::LabelTooLong);
+            }
+
+            self.write_u8(len as u8)?;
+            for b in label.as_bytes() {
+                self.write_u8(*b)?;
+            }
+        }
+
+        self.write_u8(0)?;
 
         Ok(())
     }
