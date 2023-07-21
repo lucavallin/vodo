@@ -76,6 +76,7 @@ impl DnsRecord {
                 buffer.write_u8(octets[3])?;
             }
             DnsRecord::UNKNOWN { .. } => {
+                // TODO: log it instead?
                 println!("Skipping record: {:?}", self);
             }
         }
