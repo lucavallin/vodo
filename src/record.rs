@@ -1,4 +1,4 @@
-use crate::bpb::{BytePacketBuffer, Result};
+use crate::pb::{BufferError, PacketBuffer};
 use crate::question::QueryType;
 use std::net::Ipv4Addr;
 
@@ -19,7 +19,7 @@ pub enum DnsRecord {
 }
 
 impl DnsRecord {
-    pub fn read(buffer: &mut BytePacketBuffer) -> Result<DnsRecord> {
+    pub fn read(buffer: &mut PacketBuffer) -> Result<DnsRecord, BufferError> {
         let mut domain = String::new();
         buffer.read_qname(&mut domain)?;
 

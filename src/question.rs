@@ -1,4 +1,4 @@
-use crate::bpb::{BytePacketBuffer, Result};
+use crate::pb::{BufferError, PacketBuffer};
 
 #[derive(PartialEq, Eq, Debug, Clone, Hash, Copy)]
 pub enum QueryType {
@@ -33,7 +33,7 @@ impl DnsQuestion {
         DnsQuestion { name, qtype }
     }
 
-    pub fn read(&mut self, buffer: &mut BytePacketBuffer) -> Result<()> {
+    pub fn read(&mut self, buffer: &mut PacketBuffer) -> Result<(), BufferError> {
         buffer.read_qname(&mut self.name)?;
         self.qtype = QueryType::from_num(buffer.read_u16()?); // qtype
         let _ = buffer.read_u16()?; // class

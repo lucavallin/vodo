@@ -1,5 +1,5 @@
-use crate::bpb::{BytePacketBuffer, Result};
 use crate::header::DnsHeader;
+use crate::pb::{BufferError, PacketBuffer};
 use crate::question::DnsQuestion;
 use crate::question::QueryType;
 use crate::record::DnsRecord;
@@ -24,7 +24,7 @@ impl DnsPacket {
         }
     }
 
-    pub fn from_buffer(buffer: &mut BytePacketBuffer) -> Result<DnsPacket> {
+    pub fn from_buffer(buffer: &mut PacketBuffer) -> Result<DnsPacket, BufferError> {
         let mut result = DnsPacket::new();
         result.header.read(buffer)?;
 

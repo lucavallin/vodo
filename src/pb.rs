@@ -1,4 +1,4 @@
-pub type Result<T> = std::result::Result<T, BufferError>;
+// pub type Result<T> = std::result::Result<T, BufferError>;
 
 #[derive(thiserror::Error, Debug, Clone)]
 pub enum BufferError {
@@ -8,18 +8,18 @@ pub enum BufferError {
     JumpsLimitExceeded(i32),
 }
 
-// The `BytePacketBuffer` struct is used to hold the contents of a DNS packet as a byte buffer,
+// The `PacketBuffer` struct is used to hold the contents of a DNS packet as a byte buffer,
 // and provides methods for reading and manipulating the buffer contents.
-pub struct BytePacketBuffer {
+pub struct PacketBuffer {
     pub buf: [u8; 512],
     pub pos: usize,
 }
 
-impl BytePacketBuffer {
+impl PacketBuffer {
     /// This gives us a fresh buffer for holding the packet contents, and a
     /// field for keeping track of where we are.
-    pub fn new() -> BytePacketBuffer {
-        BytePacketBuffer {
+    pub fn new() -> PacketBuffer {
+        PacketBuffer {
             buf: [0; 512],
             pos: 0,
         }
@@ -31,21 +31,21 @@ impl BytePacketBuffer {
     }
 
     /// Step the buffer position forward a specific number of steps
-    pub fn step(&mut self, steps: usize) -> Result<()> {
+    pub fn step(&mut self, steps: usize) -> Result<(), BufferError> {
         self.pos += steps;
 
         Ok(())
     }
 
     /// Change the buffer position
-    fn seek(&mut self, pos: usize) -> Result<()> {
+    fn seek(&mut self, pos: usize) -> Result<(), BufferError> {
         self.pos = pos;
 
         Ok(())
     }
 
     /// Read a single byte and move the position one step forward
-    fn read(&mut self) -> Result<u8> {
+    fn read(&mut self) -> Result<u8, BufferError> {
         if self.pos >= 512 {
             return Err(BufferError::EndOfBuffer);
         }
@@ -56,7 +56,7 @@ impl BytePacketBuffer {
     }
 
     /// Get a single byte, without changing the buffer position
-    fn get(&mut self, pos: usize) -> Result<u8> {
+    fn get(&mut self, pos: usize) -> Result<u8, BufferError> {
         if pos >= 512 {
             return Err(BufferError::EndOfBuffer);
         }
@@ -64,7 +64,7 @@ impl BytePacketBuffer {
     }
 
     /// Get a range of bytes
-    fn get_range(&mut self, start: usize, len: usize) -> Result<&[u8]> {
+    fn get_range(&mut self, start: usize, len: usize) -> Result<&[u8], BufferError> {
         if start + len >= 512 {
             return Err(BufferError::EndOfBuffer);
         }
@@ -72,14 +72,14 @@ impl BytePacketBuffer {
     }
 
     /// Read two bytes, stepping two steps forward
-    pub fn read_u16(&mut self) -> Result<u16> {
+    pub fn read_u16(&mut self) -> Result<u16, BufferError> {
         let res = ((self.read()? as u16) << 8) | (self.read()? as u16);
 
         Ok(res)
     }
 
     /// Read four bytes, stepping four steps forward
-    pub fn read_u32(&mut self) -> Result<u32> {
+    pub fn read_u32(&mut self) -> Result<u32, BufferError> {
         let res = ((self.read()? as u32) << 24)
             | ((self.read()? as u32) << 16)
             | ((self.read()? as u32) << 8)
@@ -93,7 +93,7 @@ impl BytePacketBuffer {
     /// The tricky part: Reading domain names, taking labels into consideration.
     /// Will take something like [3]www[6]google[3]com[0] and append
     /// www.google.com to outstr.
-    pub fn read_qname(&mut self, outstr: &mut String) -> Result<()> {
+    pub fn read_qname(&mut self, outstr: &mut String) -> Result<(), BufferError> {
         // Since we might encounter jumps, we'll keep track of our position
         // locally as opposed to using the position within the struct. This
         // allows us to move the shared position to a point past our current

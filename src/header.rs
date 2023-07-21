@@ -1,4 +1,4 @@
-use crate::bpb::{BytePacketBuffer, Result};
+use crate::pb::{BufferError, PacketBuffer};
 use crate::rc::ResultCode;
 
 // This struct represents the DNS header and contains the following fields:
@@ -63,11 +63,11 @@ impl DnsHeader {
         }
     }
 
-    // This function reads the DNS header fields from a given BytePacketBuffer and updates the fields of the DnsHeader struct accordingly.
+    // This function reads the DNS header fields from a given PacketBuffer and updates the fields of the DnsHeader struct accordingly.
     // It reads the id, flags, rescode, questions, answers, authoritative_entries, and resource_entries fields from the buffer.
     // It then updates the corresponding fields in the DnsHeader struct with the values read from the buffer.
     // Finally, it returns a Result indicating whether the read was successful or not.
-    pub fn read(&mut self, buffer: &mut BytePacketBuffer) -> Result<()> {
+    pub fn read(&mut self, buffer: &mut PacketBuffer) -> Result<(), BufferError> {
         self.id = buffer.read_u16()?;
 
         let flags = buffer.read_u16()?;

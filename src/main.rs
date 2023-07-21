@@ -1,18 +1,19 @@
-mod bpb;
 mod header;
 mod packet;
+mod pb;
 mod question;
 mod rc;
 mod record;
 
-use bpb::BytePacketBuffer;
 use packet::DnsPacket;
+use pb::PacketBuffer;
+use std::error::Error;
 use std::fs::File;
 use std::io::Read;
 
-fn main() -> Result<(), anyhow::Error> {
+fn main() -> Result<(), Box<dyn Error>> {
     let mut f = File::open("response_packet.txt")?;
-    let mut buffer = BytePacketBuffer::new();
+    let mut buffer = PacketBuffer::new();
     f.read(&mut buffer.buf)?;
 
     let packet = DnsPacket::from_buffer(&mut buffer)?;
