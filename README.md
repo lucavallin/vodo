@@ -12,3 +12,10 @@ A primitive DNS server written in Rust for fun.
 - Replace hardcoded bits with constants
 - CLI?
 - Add more logging
+
+### Limitations
+
+- There is no true concurrency in this server.
+- It does not support TCP, IPv6, EDNS or DNSSEC.
+- It cannot be used to host its own zones, and allow it to act as an authorative server.
+- There is no caching.
