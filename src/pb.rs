@@ -1,5 +1,3 @@
-// pub type Result<T> = std::result::Result<T, BufferError>;
-
 #[derive(thiserror::Error, Debug, Clone)]
 pub enum BufferError {
     #[error("End of buffer")]

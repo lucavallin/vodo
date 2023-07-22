@@ -1,3 +1,5 @@
+use std::net::Ipv4Addr;
+
 use crate::header::DnsHeader;
 use crate::pb::{BufferError, PacketBuffer};
 use crate::question::DnsQuestion;
