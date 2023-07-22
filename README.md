@@ -10,3 +10,5 @@ A primitive DNS server written in Rust for fun.
 - Add more DNS record types
 - Address lint warnings
 - Replace hardcoded bits with constants
+- CLI?
+- Add more logging
