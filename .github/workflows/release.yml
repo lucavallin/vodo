@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  build:
     strategy:
       matrix:
         runs_on: [ubuntu-latest, windows-latest, macos-latest, macos-arm64]
@@ -34,6 +34,14 @@ jobs:
       - name: Build release
         run: >-
           cargo build --release
+      - uses: actions/upload-artifact@v3
+        with:
+          name: release/${{ github.repository.name }}-${{ env.ARCH_TAG }}
+          path: ./target/release/${{ github.repository.name }}${{ env.BIN_SUFFIX }}}
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
@@ -44,7 +52,7 @@ jobs:
           release_name: 'Release ${{ github.ref }}'
           draft: false
           prerelease: false
-      - name: Upload binary
+      - name: Upload binaries
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
