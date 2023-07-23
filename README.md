@@ -2,6 +2,18 @@
 
 A primitive DNS server written in Rust for fun.
 
+```bash
+@lucavallin ➜ /workspaces/vodo (main) $ ./target/debug/vodo -h
+A primitive DNS server written in Rust for fun.
+
+Usage: vodo [OPTIONS]
+
+Options:
+  -p, --port <PORT>  Port for the server to listen on [default: 2053]
+  -h, --help         Print help
+  -V, --version      Print version
+```
+
 ## Usage
 
 ```bash
@@ -9,16 +21,15 @@ A primitive DNS server written in Rust for fun.
 $ cargo build --release
 
 # Run the server (or use cargo run)
-$ ./target/release/vodo -p 2712
+$ ./target/release/vodo -p 2053
 
 # Query the server
-$ dig @127.0.0.1 -p 2712 cavall.in
+$ dig @127.0.0.1 -p 2053 cavall.in
 ```
 
 ## Improvements
 
-- Add extensive comments and docs
-- Replace hardcoded bits with constants
+- Add extensive comments, replace hardcoded bits with constants
 - Pass the port as an argument to main.rs
 
 ## Limitations

@@ -1,11 +1,13 @@
 [package]
 name = "vodo"
+description = "A primitive DNS server written in Rust for fun."
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+clap = { version = "4.3.19", features = ["derive"] }
 log = "0.4.19"
 rand = "0.8.5"
 thiserror = "1.0.43"
