@@ -1,14 +1,19 @@
-NAME=vodo
-.PHONY: build run clean query
+name=vodo
+hostname ?= "cavall.in"
 
 build:
 	cargo build --release
+build-debug:
+	cargo build
+build-release: build
 
 run: build
-	./target/release/$(NAME)
+	./target/release/$(name)
 
 clean:
 	rm -rf ./target
 
 query:
-	dig @127.0.0.1 -p 5353 cavall.in
+	dig @127.0.0.1 -p 5353 $(hostname)
+
+.PHONY: all
