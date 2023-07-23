@@ -3,10 +3,10 @@ use crate::question::QueryType;
 use log::info;
 use std::net::{Ipv4Addr, Ipv6Addr};
 
+/// 0, 1, 2, 5, 15, 28 are IDs of the query types as defined in RFC 1035:
+/// see https://tools.ietf.org/html/rfc1035#section-3.2.2
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
-// 0, 1, 2, 5, 15, 28 are IDs of the query types as defined in RFC 1035:
-// see https://tools.ietf.org/html/rfc1035#section-3.2.2
 pub enum DnsRecord {
     UNKNOWN {
         domain: String,
@@ -43,7 +43,7 @@ pub enum DnsRecord {
 }
 
 impl DnsRecord {
-    // Reads a DNS record from a buffer
+    /// Reads a DNS record from a buffer
     #[allow(clippy::identity_op, clippy::redundant_field_names)]
     pub fn read(buffer: &mut PacketBuffer) -> Result<DnsRecord, BufferError> {
         let mut domain = String::new();

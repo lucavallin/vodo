@@ -19,7 +19,7 @@ struct Args {
     port: u16,
 }
 
-// Entry point of the program.
+/// Entry point of the server.
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
 

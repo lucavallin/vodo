@@ -9,14 +9,14 @@ use crate::{
     rc::ResultCode,
 };
 
-// IP of *a.root-servers.net*
+/// IP of *a.root-servers.net*
 const A_ROOT_SERVERS_IP: Ipv4Addr = Ipv4Addr::new(198, 41, 0, 4);
-// UDP socket port for lookups
+/// UDP socket port for lookups
 const LOOKUP_SOCKET_PORT: u16 = 42069;
 
-// This function takes a UDP socket as input.
-// It receives a DNS query from the socket, and sends a response back.
-// If an error occurs, it returns the error.
+/// This function takes a UDP socket as input.
+/// It receives a DNS query from the socket, and sends a response back.
+/// If an error occurs, it returns the error.
 pub fn handle_query(socket: &UdpSocket) -> Result<(), BufferError> {
     let mut req_buffer = PacketBuffer::new();
     let (_, src) = socket.recv_from(&mut req_buffer.buf)?;
@@ -66,10 +66,10 @@ pub fn handle_query(socket: &UdpSocket) -> Result<(), BufferError> {
     Ok(())
 }
 
-// This function takes a domain name, a query type, and a server address as input.
-// It creates a UDP socket, and sends a DNS query to the server.
-// It then waits for a response from the server, and returns the response.
-// If an error occurs, it returns the error.
+/// This function takes a domain name, a query type, and a server address as input.
+/// It creates a UDP socket, and sends a DNS query to the server.
+/// It then waits for a response from the server, and returns the response.
+/// If an error occurs, it returns the error.
 fn lookup(
     qname: &str,
     qtype: QueryType,
@@ -97,12 +97,11 @@ fn lookup(
     DnsPacket::from_buffer(&mut res_buffer)
 }
 
-// This function takes a domain name and a query type as input.
-// It starts by looking up the name in the root servers, and then follows the chain of
-// referrals until it finds the authoritative name server for the domain.
-// It then looks up the domain name in the authoritative name server, and returns the
-// result.
-// If an error occurs, it returns the error.
+/// This function takes a domain name and a query type as input.
+/// It starts by looking up the name in the root servers, and then follows the chain of
+/// referrals until it finds the authoritative name server for the domain.
+/// It then looks up the domain name in the authoritative name server, and returns the
+/// result. If an error occurs, it returns the error.
 fn recursive_lookup(qname: &str, qtype: QueryType) -> Result<DnsPacket, BufferError> {
     // For now we're always starting with *a.root-servers.net*.
     let mut ns = A_ROOT_SERVERS_IP;

@@ -1,42 +1,42 @@
 use crate::pb::{BufferError, PacketBuffer};
 use crate::rc::ResultCode;
 
-// This struct represents the DNS header and contains the following fields:
-// - id: a 16-bit identifier assigned by the program that generates any kind of query or response
-// - recursion_desired: a 1-bit field that specifies whether recursive query support is desired
-// - truncated_message: a 1-bit field that specifies that this message was truncated due to length greater than that permitted on the transmission channel
-// - authoritative_answer: a 1-bit field that specifies that the responding name server is an authority for the domain name in question section
-// - opcode: a 4-bit field that specifies kind of query in this message
-// - response: a 1-bit field that specifies whether this message is a response to a query or a query
-// - rescode: a 4-bit field that specifies the response code
-// - checking_disabled: a 1-bit field that specifies whether checking of query and response is disabled or not
-// - authed_data: a 1-bit field that specifies whether all data in the response is authenticated
-// - z: a 1-bit field that must be zero in all queries and responses
-// - recursion_available: a 1-bit field that specifies whether recursive query support is available in the name server
-// - questions: a 16-bit field that specifies the number of entries in the question section
-// - answers: a 16-bit field that specifies the number of resource records in the answer section
-// - authoritative_entries: a 16-bit field that specifies the number of name server resource records in the authority records section
-// - resource_entries: a 16-bit field that specifies the number of resource records in the additional records section
+/// This struct represents the DNS header and contains the following fields:
+/// - id: a 16-bit identifier assigned by the program that generates any kind of query or response
+/// - recursion_desired: a 1-bit field that specifies whether recursive query support is desired
+/// - truncated_message: a 1-bit field that specifies that this message was truncated due to length greater than that permitted on the transmission channel
+/// - authoritative_answer: a 1-bit field that specifies that the responding name server is an authority for the domain name in question section
+/// - opcode: a 4-bit field that specifies kind of query in this message
+/// - response: a 1-bit field that specifies whether this message is a response to a query or a query
+/// - rescode: a 4-bit field that specifies the response code
+/// - checking_disabled: a 1-bit field that specifies whether checking of query and response is disabled or not
+/// - authed_data: a 1-bit field that specifies whether all data in the response is authenticated
+/// - z: a 1-bit field that must be zero in all queries and responses
+/// - recursion_available: a 1-bit field that specifies whether recursive query support is available in the name server
+/// - questions: a 16-bit field that specifies the number of entries in the question section
+/// - answers: a 16-bit field that specifies the number of resource records in the answer section
+/// - authoritative_entries: a 16-bit field that specifies the number of name server resource records in the authority records section
+/// - resource_entries: a 16-bit field that specifies the number of resource records in the additional records section
 #[derive(Clone, Debug)]
 pub struct DnsHeader {
-    pub id: u16, // 16 bits
+    pub id: u16,
 
-    pub recursion_desired: bool,    // 1 bit
-    pub truncated_message: bool,    // 1 bit
-    pub authoritative_answer: bool, // 1 bit
-    pub opcode: u8,                 // 4 bits
-    pub response: bool,             // 1 bit
+    pub recursion_desired: bool,
+    pub truncated_message: bool,
+    pub authoritative_answer: bool,
+    pub opcode: u8,
+    pub response: bool,
 
-    pub rescode: ResultCode,       // 4 bits
-    pub checking_disabled: bool,   // 1 bit
-    pub authed_data: bool,         // 1 bit
-    pub z: bool,                   // 1 bit
-    pub recursion_available: bool, // 1 bit
+    pub rescode: ResultCode,
+    pub checking_disabled: bool,
+    pub authed_data: bool,
+    pub z: bool,
+    pub recursion_available: bool,
 
-    pub questions: u16,             // 16 bits
-    pub answers: u16,               // 16 bits
-    pub authoritative_entries: u16, // 16 bits
-    pub resource_entries: u16,      // 16 bits
+    pub questions: u16,
+    pub answers: u16,
+    pub authoritative_entries: u16,
+    pub resource_entries: u16,
 }
 
 impl DnsHeader {
@@ -64,11 +64,11 @@ impl DnsHeader {
         }
     }
 
-    // This function reads the DNS header fields from a given PacketBuffer and updates the fields of the DnsHeader struct accordingly.
-    // It reads the id, flags, rescode, questions, answers, authoritative_entries, and resource_entries fields from the buffer.
-    // It then updates the corresponding fields in the DnsHeader struct with the values read from the buffer.
-    // Finally, it returns a Result indicating whether the read was successful or not.
-    // Notice: Bits are shifted by (position of the fields in the header + size of the field)
+    /// This function reads the DNS header fields from a given PacketBuffer and updates the fields of the DnsHeader struct accordingly.
+    /// It reads the id, flags, rescode, questions, answers, authoritative_entries, and resource_entries fields from the buffer.
+    /// It then updates the corresponding fields in the DnsHeader struct with the values read from the buffer.
+    /// Finally, it returns a Result indicating whether the read was successful or not.
+    /// Notice: Bits are shifted by (position of the fields in the header + size of the field)
     pub fn read(&mut self, buffer: &mut PacketBuffer) -> Result<(), BufferError> {
         self.id = buffer.read_u16()?;
 
@@ -97,10 +97,10 @@ impl DnsHeader {
         Ok(())
     }
 
-    // This function writes the DNS header fields to a given PacketBuffer.
-    // It writes the id, flags, rescode, questions, answers, authoritative_entries, and resource_entries fields to the buffer.
-    // Finally, it returns a Result indicating whether the write was successful or not.
-    // Notice: Bits are shifted by (position of the fields in the header + size of the field)
+    /// This function writes the DNS header fields to a given PacketBuffer.
+    /// It writes the id, flags, rescode, questions, answers, authoritative_entries, and resource_entries fields to the buffer.
+    /// Finally, it returns a Result indicating whether the write was successful or not.
+    /// Notice: Bits are shifted by (position of the fields in the header + size of the field)
     pub fn write(&self, buffer: &mut PacketBuffer) -> Result<(), BufferError> {
         buffer.write_u16(self.id)?;
 

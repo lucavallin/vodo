@@ -26,7 +26,7 @@ impl DnsPacket {
         }
     }
 
-    // Reads a DNS packet from a buffer
+    /// Reads a DNS packet from a buffer
     pub fn from_buffer(buffer: &mut PacketBuffer) -> Result<DnsPacket, BufferError> {
         let mut result = DnsPacket::new();
         result.header.read(buffer)?;
@@ -53,7 +53,7 @@ impl DnsPacket {
         Ok(result)
     }
 
-    // Writes a DNS packet to a buffer
+    /// Writes a DNS packet to a buffer
     pub fn write(&mut self, buffer: &mut PacketBuffer) -> Result<(), BufferError> {
         self.header.questions = self.questions.len() as u16;
         self.header.answers = self.answers.len() as u16;
