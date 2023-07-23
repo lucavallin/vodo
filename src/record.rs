@@ -43,6 +43,7 @@ pub enum DnsRecord {
 }
 
 impl DnsRecord {
+    // Reads a DNS record from a buffer
     #[allow(clippy::identity_op, clippy::redundant_field_names)]
     pub fn read(buffer: &mut PacketBuffer) -> Result<DnsRecord, BufferError> {
         let mut domain = String::new();

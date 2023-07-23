@@ -1,5 +1,5 @@
-#[derive(thiserror::Error, Debug, Clone)]
 // BufferError is an enum that represents the various errors that can occur
+#[derive(thiserror::Error, Debug, Clone)]
 pub enum BufferError {
     #[error("End of buffer")]
     EndOfBuffer,
@@ -199,12 +199,15 @@ impl PacketBuffer {
         Ok(())
     }
 
+    // write_u8 writes a single byte to the buffer at the current position.
     pub fn write_u8(&mut self, val: u8) -> Result<(), BufferError> {
         self.write(val)?;
 
         Ok(())
     }
 
+    // write_u16 writes two bytes to the buffer at the current position.
+    // The most significant byte is written first.
     pub fn write_u16(&mut self, val: u16) -> Result<(), BufferError> {
         self.write((val >> 8) as u8)?;
         self.write((val & 0xFF) as u8)?;
@@ -213,6 +216,9 @@ impl PacketBuffer {
     }
 
     #[allow(clippy::identity_op)]
+    // write_u32 writes four bytes to the buffer at the current position.
+    // The most significant byte is written first.
+    // This is useful for writing IPv4 addresses.
     pub fn write_u32(&mut self, val: u32) -> Result<(), BufferError> {
         self.write(((val >> 24) & 0xFF) as u8)?;
         self.write(((val >> 16) & 0xFF) as u8)?;
@@ -225,6 +231,7 @@ impl PacketBuffer {
     // write_qname writes query names in labeled form
     pub fn write_qname(&mut self, qname: &str) -> Result<(), BufferError> {
         for label in qname.split('.') {
+            // ox3f is 0011 1111 in binary, so we can use it to check if the label is longer than 63 characters
             let len = label.len();
             if len > 0x3f {
                 return Err(BufferError::LabelTooLong);
@@ -241,14 +248,19 @@ impl PacketBuffer {
         Ok(())
     }
 
+    // set writes a single byte to the buffer at the specified position.
     fn set(&mut self, pos: usize, val: u8) -> Result<(), BufferError> {
         self.buf[pos] = val;
 
         Ok(())
     }
 
+    // set_u16 writes two bytes to the buffer at the specified position.
+    // The most significant byte is written first.
     pub fn set_u16(&mut self, pos: usize, val: u16) -> Result<(), BufferError> {
         self.set(pos, (val >> 8) as u8)?;
+        // The bitwise AND operation with 0xFF then clears all bits except for the least significant byte,
+        // which contains the value of the most significant byte of raw_addr.
         self.set(pos + 1, (val & 0xFF) as u8)?;
 
         Ok(())

@@ -1,9 +1,9 @@
 use crate::pb::{BufferError, PacketBuffer};
 
-#[allow(clippy::upper_case_acronyms)]
-#[derive(PartialEq, Eq, Debug, Clone, Hash, Copy)]
 // 1, 2, 5, 15, 28 are IDs of the query types as defined in RFC 1035:
 // see https://tools.ietf.org/html/rfc1035#section-3.2.2
+#[allow(clippy::upper_case_acronyms)]
+#[derive(PartialEq, Eq, Debug, Clone, Hash, Copy)]
 pub enum QueryType {
     UNKNOWN(u16),
     A,     // 1
