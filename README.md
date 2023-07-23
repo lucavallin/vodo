@@ -5,12 +5,21 @@ A primitive DNS server written in Rust for fun.
 ## Usage
 
 ```bash
+# Build the server
+$ cargo build --release
+
+# Run the server (or use cargo run)
+$ ./target/release/vodo -p 2712
+
+# Query the server
+$ dig @127.0.0.1 -p 2712 cavall.in
+```
 
 ## Improvements
 
 - Add extensive comments and docs
 - Replace hardcoded bits with constants
-- Pass the port as an argument
+- Pass the port as an argument to main.rs
 
 ## Limitations
 
