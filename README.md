@@ -1,6 +1,7 @@
 # <img src="./docs/vodo.png" style="width:30px;padding-right:20px;margin-bottom:-8px;">vòdo
 
 A primitive DNS server written in Rust for fun.
+Todo: Add extensive comments, replace hardcoded bits with constants.
 
 ```bash
 @lucavallin ➜ /workspaces/vodo (main) $ ./target/debug/vodo -h
@@ -26,11 +27,6 @@ $ ./target/release/vodo -p 2053
 # Query the server
 $ dig @127.0.0.1 -p 2053 cavall.in
 ```
-
-## Improvements
-
-- Add extensive comments, replace hardcoded bits with constants
-- Pass the port as an argument to main.rs
 
 ## Limitations
 
