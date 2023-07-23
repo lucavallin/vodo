@@ -1,5 +1,6 @@
 name=vodo
 hostname ?= "cavall.in"
+port ?= 5353
 
 build:
 	cargo build --release
@@ -8,7 +9,7 @@ build-debug:
 build-release: build
 
 run: build
-	./target/release/$(name)
+	./target/release/$(name) -p $(port)
 
 clean:
 	rm -rf ./target

@@ -59,13 +59,13 @@ I have included a Makefile to make it easier to build and run the server.
 
 ```bash
 # Build the server
-$ make build
+$ make build[-release|-debug]
 # Run the server
-$ make run
+$ make run [port=5353]
 # Clean the build
 $ make clean
 # Query the server
-$ make query
+$ make query [hostname=example.com]
 ```
 
 ## Limitations
