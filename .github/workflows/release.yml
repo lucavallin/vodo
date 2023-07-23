@@ -13,10 +13,14 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+      - name: Add rustc targets
+        run: >-
+          rustup target add x86_64-unknown-linux-gnu
+          x86_64-pc-windows-msvc x86_64-apple-darwin aarch64-apple-darwin
       - name: Build for all platforms
         run: >-
           cargo build --release --target x86_64-unknown-linux-gnu --target
-          x86_64-pc-windows-gnu --target x86_64-apple-darwin
+          x86_64-pc-windows-msvc --target x86_64-apple-darwin --target aarch64-apple-darwin
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
@@ -45,12 +49,21 @@ jobs:
           asset_path: ./target/x86_64-pc-windows-gnu/release/${{ github.event.repository.name }}.exe
           asset_name: ${{ github.event.repository.name }}-windows.exe
           asset_content_type: application/octet-stream
-      - name: Upload macOS binary
+      - name: Upload macOS Intel binary
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
         with:
           upload_url: '${{ steps.create_release.outputs.upload_url }}'
           asset_path: ./target/x86_64-apple-darwin/release/${{ github.event.repository.name }}
-          asset_name: ${{ github.event.repository.name }}-macos
+          asset_name: ${{ github.event.repository.name }}-macos-intel
+          asset_content_type: application/octet-stream
+      - name: Upload macOS ARM binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+        with:
+          upload_url: '${{ steps.create_release.outputs.upload_url }}'
+          asset_path: ./target/x86_64-apple-darwin/release/${{ github.event.repository.name }}
+          asset_name: ${{ github.event.repository.name }}-macos-arm
           asset_content_type: application/octet-stream
