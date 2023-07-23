@@ -22,11 +22,10 @@ struct Args {
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
 
-    // Bind an UDP socket on port 2053
+    // Bind an UDP socket the specified port.
     let socket = UdpSocket::bind(("0.0.0.0", args.port))?;
 
-    // For now, queries are handled sequentially, so an infinite loop for servicing
-    // requests is initiated.
+    // Queries are handled sequentially, so an infinite loop for servicing requests is initiated.
     loop {
         match handle_query(&socket) {
             Ok(_) => {}
