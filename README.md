@@ -26,6 +26,32 @@ $ ./target/release/vodo -p 2053
 
 # Query the server
 $ dig @127.0.0.1 -p 2053 cavall.in
+
+; <<>> DiG 9.18.16-1~deb12u1-Debian <<>> @127.0.0.1 -p 2053 cavall.in
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 8919
+;; flags: qr rd ra; QUERY: 1, ANSWER: 4, AUTHORITY: 2, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;cavall.in.                     IN      A
+
+;; ANSWER SECTION:
+cavall.in.              1799    IN      A       185.199.111.153
+cavall.in.              1799    IN      A       185.199.108.153
+cavall.in.              1799    IN      A       185.199.109.153
+cavall.in.              1799    IN      A       185.199.110.153
+
+;; AUTHORITY SECTION:
+cavall.in.              1800    IN      NS      dns1.registrar-servers.com.
+cavall.in.              1800    IN      NS      dns2.registrar-servers.com.
+
+;; Query time: 120 msec
+;; SERVER: 127.0.0.1#2053(127.0.0.1) (UDP)
+;; WHEN: Sun Jul 23 16:04:24 UTC 2023
+;; MSG SIZE  rcvd: 225
+
 ```
 
 ## Limitations
