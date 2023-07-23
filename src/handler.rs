@@ -1,3 +1,5 @@
+use log::info;
+use rand::Rng;
 use std::net::{Ipv4Addr, UdpSocket};
 
 use crate::{
@@ -6,6 +8,9 @@ use crate::{
     question::{DnsQuestion, QueryType},
     rc::ResultCode,
 };
+
+// IP of *a.root-servers.net*
+const A_ROOT_SERVERS_IP: Ipv4Addr = Ipv4Addr::new(198, 41, 0, 4);
 
 // This function takes a UDP socket as input.
 // It receives a DNS query from the socket, and sends a response back.
@@ -23,22 +28,22 @@ pub fn handle_query(socket: &UdpSocket) -> Result<(), BufferError> {
     packet.header.response = true;
 
     if let Some(question) = request.questions.pop() {
-        println!("Received query: {:?}", question);
+        info!("Received query: {:?}", question);
 
         if let Ok(result) = recursive_lookup(&question.name, question.qtype) {
             packet.questions.push(question.clone());
             packet.header.rescode = result.header.rescode;
 
             for rec in result.answers {
-                println!("Answer: {:?}", rec);
+                info!("Answer: {:?}", rec);
                 packet.answers.push(rec);
             }
             for rec in result.authorities {
-                println!("Authority: {:?}", rec);
+                info!("Authority: {:?}", rec);
                 packet.authorities.push(rec);
             }
             for rec in result.resources {
-                println!("Resource: {:?}", rec);
+                info!("Resource: {:?}", rec);
                 packet.resources.push(rec);
             }
         } else {
@@ -68,11 +73,12 @@ fn lookup(
     qtype: QueryType,
     server: (Ipv4Addr, u16),
 ) -> Result<DnsPacket, BufferError> {
+    // Socket into which we'll receive the response.
     let socket = UdpSocket::bind(("0.0.0.0", 43210))?;
 
     let mut packet = DnsPacket::new();
 
-    packet.header.id = 6666;
+    packet.header.id = rand::thread_rng().gen();
     packet.header.questions = 1;
     packet.header.recursion_desired = true;
     packet
@@ -97,11 +103,11 @@ fn lookup(
 // If an error occurs, it returns the error.
 fn recursive_lookup(qname: &str, qtype: QueryType) -> Result<DnsPacket, BufferError> {
     // For now we're always starting with *a.root-servers.net*.
-    let mut ns = "198.41.0.4".parse::<Ipv4Addr>().unwrap();
+    let mut ns = A_ROOT_SERVERS_IP;
 
     // Since it might take an arbitrary number of steps, we enter an unbounded loop.
     loop {
-        println!("attempting lookup of {:?} {} with ns {}", qtype, qname, ns);
+        info!("attempting lookup of {:?} {} with ns {}", qtype, qname, ns);
 
         // The next step is to send the query to the active server.
         let ns_copy = ns;

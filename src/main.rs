@@ -7,6 +7,7 @@ mod rc;
 mod record;
 
 use handler::handle_query;
+use log::warn;
 use std::{error::Error, net::UdpSocket};
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -18,7 +19,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     loop {
         match handle_query(&socket) {
             Ok(_) => {}
-            Err(e) => eprintln!("An error occurred: {}", e),
+            Err(e) => warn!("An error occurred: {}", e),
         }
     }
 }

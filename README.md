@@ -8,10 +8,8 @@ A primitive DNS server written in Rust for fun.
 
 ## Improvements
 
-- Address lint warnings
 - Add extensive comments and docs
 - Replace hardcoded bits with constants
-- Add logging
 
 ## Limitations
 

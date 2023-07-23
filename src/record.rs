@@ -1,5 +1,6 @@
 use crate::pb::{BufferError, PacketBuffer};
 use crate::question::QueryType;
+use log::info;
 use std::net::{Ipv4Addr, Ipv6Addr};
 
 #[allow(clippy::upper_case_acronyms)]
@@ -227,7 +228,7 @@ impl DnsRecord {
                 }
             }
             DnsRecord::UNKNOWN { .. } => {
-                println!("Skipping record: {:?}", self);
+                info!("Skipping record: {:?}", self);
             }
         }
 
