@@ -11,6 +11,8 @@ use crate::{
 
 // IP of *a.root-servers.net*
 const A_ROOT_SERVERS_IP: Ipv4Addr = Ipv4Addr::new(198, 41, 0, 4);
+// UDP socket port for lookups
+const LOOKUP_SOCKET_PORT: u16 = 42069;
 
 // This function takes a UDP socket as input.
 // It receives a DNS query from the socket, and sends a response back.
@@ -74,7 +76,7 @@ fn lookup(
     server: (Ipv4Addr, u16),
 ) -> Result<DnsPacket, BufferError> {
     // Socket into which we'll receive the response.
-    let socket = UdpSocket::bind(("0.0.0.0", 43210))?;
+    let socket = UdpSocket::bind(("0.0.0.0", LOOKUP_SOCKET_PORT))?;
 
     let mut packet = DnsPacket::new();
 

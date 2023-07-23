@@ -10,6 +10,7 @@ A primitive DNS server written in Rust for fun.
 
 - Add extensive comments and docs
 - Replace hardcoded bits with constants
+- Pass the port as an argument
 
 ## Limitations
 
