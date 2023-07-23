@@ -83,7 +83,7 @@ impl DnsRecord {
                 );
 
                 Ok(DnsRecord::AAAA {
-                    domain: domain,
+                    domain,
                     addr: addr,
                     ttl: ttl,
                 })

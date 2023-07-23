@@ -9,6 +9,7 @@ pub enum QueryType {
     MX,    // 15
     AAAA,  // 28
 }
+
 impl QueryType {
     pub fn to_num(&self) -> u16 {
         match *self {
