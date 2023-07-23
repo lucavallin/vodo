@@ -5,9 +5,6 @@ on:
     tags:
       - v*.*.*
 
-permissions:
-  contents: write
-
 jobs:
   release:
     strategy:
@@ -15,14 +12,10 @@ jobs:
         runs_on: [ubuntu-latest, windows-latest, macos-latest, macos-arm64]
         include:
           - env:
-              ARCH_TAG: linux
           - env:
-              ARCH_TAG: windows
               BIN_SUFFIX: .exe
           - env:
-              ARCH_TAG: macos
           - env:
-              ARCH_TAG: macos-arm
     runs-on: ${{ matrix.runs_on }}
     steps:
       - name: Checkout code
@@ -51,5 +44,5 @@ jobs:
         with:
           upload_url: '${{ steps.create_release.outputs.upload_url }}'
           asset_path: ./target/release/${{ github.repository.name }}${{ env.BIN_SUFFIX }}}
-          asset_name: ${{ github.repository.name }}-${{ env.ARCH_TAG }}
+          asset_name: ${{ github.repository.name }}-${{ matrix.runs_on }}
           asset_content_type: application/octet-stream
