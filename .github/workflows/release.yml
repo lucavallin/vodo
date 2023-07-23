@@ -1,11 +1,18 @@
 name: Build and Release
-'on':
+
+on:
   push:
     tags:
       - v*.*.*
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  release:
+    strategy:
+      matrix:
+        runs_on: [ubuntu-latest, windows-latest, macos-latest, macos-arm64]
+        os_name: [ubuntu, windows, macos-intel, macos-arm]
+        binary_name: [vodo, vodo.exe, vodo, vodo]
+    runs-on: ${{ matrix.runs_on }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -13,14 +20,9 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - name: Add rustc targets
+      - name: Build release
         run: >-
-          rustup target add x86_64-unknown-linux-gnu
-          x86_64-pc-windows-msvc x86_64-apple-darwin aarch64-apple-darwin
-      - name: Build for all platforms
-        run: >-
-          cargo build --release --target x86_64-unknown-linux-gnu --target
-          x86_64-pc-windows-msvc --target x86_64-apple-darwin --target aarch64-apple-darwin
+          cargo build --release
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
@@ -31,39 +33,12 @@ jobs:
           release_name: 'Release ${{ github.ref }}'
           draft: false
           prerelease: false
-      - name: Upload Linux binary
+      - name: Upload binary
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
         with:
           upload_url: '${{ steps.create_release.outputs.upload_url }}'
-          asset_path: ./target/x86_64-unknown-linux-gnu/release/${{ github.event.repository.name }}
-          asset_name: ${{ github.event.repository.name }}-linux
-          asset_content_type: application/octet-stream
-      - name: Upload Windows binary
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-        with:
-          upload_url: '${{ steps.create_release.outputs.upload_url }}'
-          asset_path: ./target/x86_64-pc-windows-gnu/release/${{ github.event.repository.name }}.exe
-          asset_name: ${{ github.event.repository.name }}-windows.exe
-          asset_content_type: application/octet-stream
-      - name: Upload macOS Intel binary
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-        with:
-          upload_url: '${{ steps.create_release.outputs.upload_url }}'
-          asset_path: ./target/x86_64-apple-darwin/release/${{ github.event.repository.name }}
-          asset_name: ${{ github.event.repository.name }}-macos-intel
-          asset_content_type: application/octet-stream
-      - name: Upload macOS ARM binary
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-        with:
-          upload_url: '${{ steps.create_release.outputs.upload_url }}'
-          asset_path: ./target/x86_64-apple-darwin/release/${{ github.event.repository.name }}
-          asset_name: ${{ github.event.repository.name }}-macos-arm
+          asset_path: ./target/release/${{ matrix.binary_name }}
+          asset_name: ${{ github.event.repository.name }}-${{ matrix.os_name }}
           asset_content_type: application/octet-stream
