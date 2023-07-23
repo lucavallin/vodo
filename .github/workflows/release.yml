@@ -16,16 +16,13 @@ jobs:
         include:
           - env:
               ARCH_TAG: linux
-              BINARY_NAME: vodo
           - env:
               ARCH_TAG: windows
-              BINARY_NAME: vodo.exe
+              BIN_SUFFIX: .exe
           - env:
               ARCH_TAG: macos
-              BINARY_NAME: vodo
           - env:
               ARCH_TAG: macos-arm
-              BINARY_NAME: vodo
     runs-on: ${{ matrix.runs_on }}
     steps:
       - name: Checkout code
@@ -53,6 +50,6 @@ jobs:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
         with:
           upload_url: '${{ steps.create_release.outputs.upload_url }}'
-          asset_path: ./target/release/${{ env.BINARY_NAME }}
-          asset_name: ${{ env.BINARY_NAME }}-${{ env.ARCH_TAG }}
+          asset_path: ./target/release/${{ github.repository.name }}${{ env.BIN_SUFFIX }}}
+          asset_name: ${{ github.repository.name }}-${{ env.ARCH_TAG }}
           asset_content_type: application/octet-stream
