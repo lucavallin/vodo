@@ -5,6 +5,9 @@ on:
     tags:
       - v*.*.*
 
+permissions:
+  contents: write
+
 jobs:
   release:
     strategy:
@@ -51,5 +54,5 @@ jobs:
         with:
           upload_url: '${{ steps.create_release.outputs.upload_url }}'
           asset_path: ./target/release/${{ env.BINARY_NAME }}
-          asset_name: ${{ github.event.repository.name }}-${{ env.ARCH_TAG }}
+          asset_name: ${{ env.BINARY_NAME }}-${{ env.ARCH_TAG }}
           asset_content_type: application/octet-stream
