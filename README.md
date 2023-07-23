@@ -9,7 +9,7 @@ A primitive DNS server written in Rust for fun.
 Usage: vodo [OPTIONS]
 
 Options:
-  -p, --port <PORT>  Port for the server to listen on [default: 2053]
+  -p, --port <PORT>  Port for the server to listen on [default: 5353]
   -h, --help         Print help
   -V, --version      Print version
 ```
@@ -21,12 +21,12 @@ Options:
 $ cargo build --release
 
 # Run the server (or use cargo run)
-$ ./target/release/vodo -p 2053
+$ ./target/release/vodo -p 5353
 
 # Query the server
-$ dig @127.0.0.1 -p 2053 cavall.in
+$ dig @127.0.0.1 -p 5353 cavall.in
 
-; <<>> DiG 9.18.16-1~deb12u1-Debian <<>> @127.0.0.1 -p 2053 cavall.in
+; <<>> DiG 9.18.16-1~deb12u1-Debian <<>> @127.0.0.1 -p 5353 cavall.in
 ; (1 server found)
 ;; global options: +cmd
 ;; Got answer:
@@ -51,6 +51,21 @@ cavall.in.              1800    IN      NS      dns2.registrar-servers.com.
 ;; WHEN: Sun Jul 23 16:04:24 UTC 2023
 ;; MSG SIZE  rcvd: 225
 
+```
+
+## Makefile
+
+I have included a Makefile to make it easier to build and run the server.
+
+```bash
+# Build the server
+$ make build
+# Run the server
+$ make run
+# Clean the build
+$ make clean
+# Query the server
+$ make query
 ```
 
 ## Limitations

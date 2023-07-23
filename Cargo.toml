@@ -10,4 +10,5 @@ edition = "2021"
 clap = { version = "4.3.19", features = ["derive"] }
 log = "0.4.19"
 rand = "0.8.5"
+simplelog = "0.12.1"
 thiserror = "1.0.43"
