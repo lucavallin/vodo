@@ -12,18 +12,8 @@ jobs:
   build:
     strategy:
       matrix:
-        runs_on: [ubuntu-latest, windows-latest, macos-latest, macos-arm64]
-        include:
-          - env:
-              ARCH_TAG: linux
-          - env:
-              ARCH_TAG: windows
-              BIN_SUFFIX: .exe
-          - env:
-              ARCH_TAG: macos
-          - env:
-              ARCH_TAG: macos-arm
-    runs-on: ${{ matrix.runs_on }}
+        os: [[ubuntu-latest, linux64, ""], [windows-latest, win64, ".exe"], [macos-latest, macos-intel, ""], [macos-arm64, macos-arm, ""]]
+    runs-on: ${{ matrix.os[0] }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -36,28 +26,19 @@ jobs:
           cargo build --release
       - uses: actions/upload-artifact@v3
         with:
-          name: release/${{ github.repository.name }}-${{ env.ARCH_TAG }}
-          path: ./target/release/${{ github.repository.name }}${{ env.BIN_SUFFIX }}}
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-        with:
-          tag_name: '${{ github.ref }}'
-          release_name: 'Release ${{ github.ref }}'
-          draft: false
-          prerelease: false
-      - name: Upload binaries
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-        with:
-          upload_url: '${{ steps.create_release.outputs.upload_url }}'
-          asset_path: ./target/release/${{ github.repository.name }}${{ env.BIN_SUFFIX }}}
-          asset_name: ${{ github.repository.name }}-${{ env.ARCH_TAG }}
-          asset_content_type: application/octet-stream
+          name: ${{ github.repository.name }}-${{ matrix.os[1] }}${{ matrix.os[2] }}
+          path: ./target/release/${{ github.repository.name }}${{ matrix.os[2] }}
+  # release:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Create release
+  #       id: create_release
+  #       uses: actions/create-release@v1
+  #       env:
+  #         GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+  #       with:
+  #         tag_name: '${{ github.ref }}'
+  #         release_name: 'Release ${{ github.ref }}'
+  #         draft: false
+  #         prerelease: false
