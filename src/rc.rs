@@ -1,3 +1,4 @@
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum ResultCode {
     NOERROR = 0,
@@ -9,6 +10,7 @@ pub enum ResultCode {
 }
 
 impl ResultCode {
+    #[allow(clippy::wildcard_in_or_patterns)]
     pub fn from_num(num: u8) -> ResultCode {
         match num {
             1 => ResultCode::FORMERR,

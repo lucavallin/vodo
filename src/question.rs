@@ -1,5 +1,6 @@
 use crate::pb::{BufferError, PacketBuffer};
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(PartialEq, Eq, Debug, Clone, Hash, Copy)]
 pub enum QueryType {
     UNKNOWN(u16),
@@ -11,8 +12,8 @@ pub enum QueryType {
 }
 
 impl QueryType {
-    pub fn to_num(&self) -> u16 {
-        match *self {
+    pub fn to_num(self) -> u16 {
+        match self {
             QueryType::UNKNOWN(x) => x,
             QueryType::A => 1,
             QueryType::NS => 2,

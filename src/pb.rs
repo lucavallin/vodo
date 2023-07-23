@@ -76,7 +76,7 @@ impl PacketBuffer {
         if start + len >= 512 {
             return Err(BufferError::EndOfBuffer);
         }
-        Ok(&self.buf[start..start + len as usize])
+        Ok(&self.buf[start..start + len])
     }
 
     /// Read two bytes, stepping two steps forward
@@ -87,6 +87,7 @@ impl PacketBuffer {
     }
 
     /// Read four bytes, stepping four steps forward
+    #[allow(clippy::identity_op)]
     pub fn read_u32(&mut self) -> Result<u32, BufferError> {
         let res = ((self.read()? as u32) << 24)
             | ((self.read()? as u32) << 16)
@@ -209,6 +210,7 @@ impl PacketBuffer {
         Ok(())
     }
 
+    #[allow(clippy::identity_op)]
     pub fn write_u32(&mut self, val: u32) -> Result<(), BufferError> {
         self.write(((val >> 24) & 0xFF) as u8)?;
         self.write(((val >> 16) & 0xFF) as u8)?;

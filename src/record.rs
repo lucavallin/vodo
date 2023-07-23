@@ -2,8 +2,8 @@ use crate::pb::{BufferError, PacketBuffer};
 use crate::question::QueryType;
 use std::net::{Ipv4Addr, Ipv6Addr};
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
-#[allow(dead_code)]
 pub enum DnsRecord {
     UNKNOWN {
         domain: String,
@@ -40,6 +40,7 @@ pub enum DnsRecord {
 }
 
 impl DnsRecord {
+    #[allow(clippy::identity_op, clippy::redundant_field_names)]
     pub fn read(buffer: &mut PacketBuffer) -> Result<DnsRecord, BufferError> {
         let mut domain = String::new();
         buffer.read_qname(&mut domain)?;
