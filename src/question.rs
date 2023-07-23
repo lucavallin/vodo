@@ -2,6 +2,8 @@ use crate::pb::{BufferError, PacketBuffer};
 
 #[allow(clippy::upper_case_acronyms)]
 #[derive(PartialEq, Eq, Debug, Clone, Hash, Copy)]
+// 1, 2, 5, 15, 28 are IDs of the query types as defined in RFC 1035:
+// see https://tools.ietf.org/html/rfc1035#section-3.2.2
 pub enum QueryType {
     UNKNOWN(u16),
     A,     // 1
@@ -48,8 +50,10 @@ impl DnsQuestion {
 
     pub fn read(&mut self, buffer: &mut PacketBuffer) -> Result<(), BufferError> {
         buffer.read_qname(&mut self.name)?;
-        self.qtype = QueryType::from_num(buffer.read_u16()?); // qtype
-        let _ = buffer.read_u16()?; // class
+        self.qtype = QueryType::from_num(buffer.read_u16()?);
+        // DNS question class, in practice always equal to 1:
+        // see https://tools.ietf.org/html/rfc1035#section-3.2.4
+        let _ = buffer.read_u16()?;
 
         Ok(())
     }

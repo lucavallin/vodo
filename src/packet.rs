@@ -26,6 +26,7 @@ impl DnsPacket {
         }
     }
 
+    // Reads a DNS packet from a buffer
     pub fn from_buffer(buffer: &mut PacketBuffer) -> Result<DnsPacket, BufferError> {
         let mut result = DnsPacket::new();
         result.header.read(buffer)?;
@@ -52,6 +53,7 @@ impl DnsPacket {
         Ok(result)
     }
 
+    // Writes a DNS packet to a buffer
     pub fn write(&mut self, buffer: &mut PacketBuffer) -> Result<(), BufferError> {
         self.header.questions = self.questions.len() as u16;
         self.header.answers = self.answers.len() as u16;
@@ -76,9 +78,9 @@ impl DnsPacket {
         Ok(())
     }
 
-    /// It's useful to be able to pick a random A record from a packet. When we
-    /// get multiple IP's for a single name, it doesn't matter which one we
-    /// choose, so in those cases we can now pick one at random.
+    /// It's useful to be able to pick a random A record from a packet. When there
+    /// are multiple IPs for a single name, it doesn't matter which one is chosen
+    /// so in those cases a random pick is fine.
     pub fn get_random_a(&self) -> Option<Ipv4Addr> {
         self.answers
             .iter()
@@ -95,30 +97,30 @@ impl DnsPacket {
         self.authorities
             .iter()
             // In practice, these are always NS records in well formed packages.
-            // Convert the NS records to a tuple which has only the data we need
+            // Convert the NS records to a tuple which has only the needed data
             // to make it easy to work with.
             .filter_map(|record| match record {
                 DnsRecord::NS { domain, host, .. } => Some((domain.as_str(), host.as_str())),
                 _ => None,
             })
-            // Discard servers which aren't authoritative to our query
+            // Discard servers which aren't authoritative to the query
             .filter(move |(domain, _)| qname.ends_with(*domain))
     }
 
-    /// We'll use the fact that name servers often bundle the corresponding
-    /// A records when replying to an NS query to implement a function that
+    /// Name servers often bundle the corresponding A records
+    /// when replying to an NS query. This fact can be used function that
     /// returns the actual IP for an NS record if possible.
     pub fn get_resolved_ns(&self, qname: &str) -> Option<Ipv4Addr> {
         // Get an iterator over the nameservers in the authorities section
         self.get_ns(qname)
-            // Now we need to look for a matching A record in the additional
-            // section. Since we just want the first valid record, we can just
+            // Look for a matching A record in the additional sections.
+            // Since only the first valid record is needed, it can just
             // build a stream of matching records.
             .flat_map(|(_, host)| {
                 self.resources
                     .iter()
                     // Filter for A records where the domain match the host
-                    // of the NS record that we are currently processing
+                    // of the NS record that is being processed
                     .filter_map(move |record| match record {
                         DnsRecord::A { domain, addr, .. } if domain == host => Some(addr),
                         _ => None,
@@ -129,10 +131,9 @@ impl DnsPacket {
             .next()
     }
 
-    /// However, not all name servers are as that nice. In certain cases there won't
-    /// be any A records in the additional section, and we'll have to perform *another*
-    /// lookup in the midst. For this, we introduce a method for returning the host
-    /// name of an appropriate name server.
+    /// Not all name servers are as friendly. In certain cases there won't
+    /// be any A records in the additional section, and another lookup will be required.
+    /// This method is used to return the host name of an appropriate name server in these cases.
     pub fn get_unresolved_ns<'a>(&'a self, qname: &'a str) -> Option<&'a str> {
         // Get an iterator over the nameservers in the authorities section
         self.get_ns(qname)

@@ -5,6 +5,8 @@ use std::net::{Ipv4Addr, Ipv6Addr};
 
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
+// 0, 1, 2, 5, 15, 28 are IDs of the query types as defined in RFC 1035:
+// see https://tools.ietf.org/html/rfc1035#section-3.2.2
 pub enum DnsRecord {
     UNKNOWN {
         domain: String,
@@ -52,6 +54,14 @@ impl DnsRecord {
         let ttl = buffer.read_u32()?;
         let data_len = buffer.read_u16()?;
 
+        // The purpose of the upcoming bitwise-operations is to extract
+        // the most significant byte of the 32-bit integer raw_addr (in case of IPv4).
+        // By shifting the bits to the right by 24 positions, the most significant byte is moved to
+        // the least significant position, and all other bits are set to 0.
+        // The bitwise AND operation with 0xFF then clears all bits except for the least significant byte,
+        // which contains the value of the most significant byte of raw_addr.
+        // Finally, the resulting value is cast to an unsigned 8-bit integer,
+        // which can be used to represent a single byte of data.
         match qtype {
             QueryType::A => {
                 let raw_addr = buffer.read_u32()?;

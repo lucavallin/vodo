@@ -1,6 +1,7 @@
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-// Result codes as defined in RFC 1035: https://tools.ietf.org/html/rfc1035#section-4.1.1
+// Result codes as defined in RFC 1035:
+// see https://tools.ietf.org/html/rfc1035#section-4.1.1
 pub enum ResultCode {
     NOERROR = 0,
     FORMERR = 1,

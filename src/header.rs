@@ -42,6 +42,7 @@ pub struct DnsHeader {
 impl DnsHeader {
     pub fn new() -> DnsHeader {
         DnsHeader {
+            // id is usually set to a random number by the client
             id: 0,
 
             recursion_desired: false,
@@ -67,12 +68,14 @@ impl DnsHeader {
     // It reads the id, flags, rescode, questions, answers, authoritative_entries, and resource_entries fields from the buffer.
     // It then updates the corresponding fields in the DnsHeader struct with the values read from the buffer.
     // Finally, it returns a Result indicating whether the read was successful or not.
+    // Notice: Bits are shifted by (position of the fields in the header + size of the field)
     pub fn read(&mut self, buffer: &mut PacketBuffer) -> Result<(), BufferError> {
         self.id = buffer.read_u16()?;
 
         let flags = buffer.read_u16()?;
         let a = (flags >> 8) as u8;
         let b = (flags & 0xFF) as u8;
+
         self.recursion_desired = (a & (1 << 0)) > 0;
         self.truncated_message = (a & (1 << 1)) > 0;
         self.authoritative_answer = (a & (1 << 2)) > 0;
@@ -94,6 +97,10 @@ impl DnsHeader {
         Ok(())
     }
 
+    // This function writes the DNS header fields to a given PacketBuffer.
+    // It writes the id, flags, rescode, questions, answers, authoritative_entries, and resource_entries fields to the buffer.
+    // Finally, it returns a Result indicating whether the write was successful or not.
+    // Notice: Bits are shifted by (position of the fields in the header + size of the field)
     pub fn write(&self, buffer: &mut PacketBuffer) -> Result<(), BufferError> {
         buffer.write_u16(self.id)?;
 

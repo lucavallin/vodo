@@ -1,4 +1,5 @@
 #[derive(thiserror::Error, Debug, Clone)]
+// BufferError is an enum that represents the various errors that can occur
 pub enum BufferError {
     #[error("End of buffer")]
     EndOfBuffer,
@@ -10,6 +11,7 @@ pub enum BufferError {
     GenericError(String),
 }
 
+// Implement the From trait for BufferError, so that we can use the ? operator
 impl From<std::io::Error> for BufferError {
     fn from(e: std::io::Error) -> Self {
         BufferError::GenericError(e.to_string())

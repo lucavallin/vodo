@@ -8,7 +8,7 @@ mod record;
 
 use clap::Parser;
 use handler::handle_query;
-use log::warn;
+use log::{info, warn};
 use std::{error::Error, net::UdpSocket};
 
 #[derive(Parser, Debug)]
@@ -19,6 +19,7 @@ struct Args {
     port: u16,
 }
 
+// Entry point of the program.
 fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
 
@@ -26,6 +27,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let socket = UdpSocket::bind(("0.0.0.0", args.port))?;
 
     // Queries are handled sequentially, so an infinite loop for servicing requests is initiated.
+    info!("DNS server is listening on port {}...", args.port);
     loop {
         match handle_query(&socket) {
             Ok(_) => {}

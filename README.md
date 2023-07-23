@@ -1,7 +1,6 @@
 # <img src="./docs/vodo.png" style="width:30px;padding-right:20px;margin-bottom:-8px;">vòdo
 
 A primitive DNS server written in Rust for fun.
-Todo: Add extensive comments, replace hardcoded bits with constants.
 
 ```bash
 @lucavallin ➜ /workspaces/vodo (main) $ ./target/debug/vodo -h

@@ -75,7 +75,7 @@ fn lookup(
     qtype: QueryType,
     server: (Ipv4Addr, u16),
 ) -> Result<DnsPacket, BufferError> {
-    // Socket into which we'll receive the response.
+    // Socket into which the response is received.
     let socket = UdpSocket::bind(("0.0.0.0", LOOKUP_SOCKET_PORT))?;
 
     let mut packet = DnsPacket::new();
@@ -107,7 +107,7 @@ fn recursive_lookup(qname: &str, qtype: QueryType) -> Result<DnsPacket, BufferEr
     // For now we're always starting with *a.root-servers.net*.
     let mut ns = A_ROOT_SERVERS_IP;
 
-    // Since it might take an arbitrary number of steps, we enter an unbounded loop.
+    // It might take an arbitrary number of steps, therefore it uses an unbounded loop.
     loop {
         info!("attempting lookup of {:?} {} with ns {}", qtype, qname, ns);
 
@@ -117,19 +117,19 @@ fn recursive_lookup(qname: &str, qtype: QueryType) -> Result<DnsPacket, BufferEr
         let server = (ns_copy, 53);
         let response = lookup(qname, qtype, server)?;
 
-        // If there are entries in the answer section, and no errors, we are done!
+        // If there are entries in the answer section, and no errors, it's done
         if !response.answers.is_empty() && response.header.rescode == ResultCode::NOERROR {
             return Ok(response);
         }
 
-        // We might also get a `NXDOMAIN` reply, which is the authoritative name servers
+        // `NXDOMAIN` is a possible reply, which is the authoritative name servers
         // way of telling us that the name doesn't exist.
         if response.header.rescode == ResultCode::NXDOMAIN {
             return Ok(response);
         }
 
-        // Otherwise, we'll try to find a new nameserver based on NS and a corresponding A
-        // record in the additional section. If this succeeds, we can switch name server
+        // Otherwise, try to find a new nameserver based on NS and a corresponding A
+        // record in the additional section. If this succeeds, switch name server
         // and retry the loop.
         if let Some(new_ns) = response.get_resolved_ns(qname) {
             ns = new_ns;
@@ -137,20 +137,19 @@ fn recursive_lookup(qname: &str, qtype: QueryType) -> Result<DnsPacket, BufferEr
             continue;
         }
 
-        // If not, we'll have to resolve the ip of a NS record. If no NS records exist,
-        // we'll go with what the last server told us.
+        // If not, it must resolve the ip of a NS record. If no NS records exist,
+        // it uses what the last server said.
         let new_ns_name = match response.get_unresolved_ns(qname) {
             Some(x) => x,
             None => return Ok(response),
         };
 
-        // Here we go down the rabbit hole by starting _another_ lookup sequence in the
-        // midst of our current one. Hopefully, this will give us the IP of an appropriate
-        // name server.
+        // Starting a new lookup sequence in the midst of our current one.
+        //  Hopefully, this will return the IP of an appropriate name server.
         let recursive_response = recursive_lookup(new_ns_name, QueryType::A)?;
 
-        // Finally, we pick a random ip from the result, and restart the loop. If no such
-        // record is available, we again return the last result we got.
+        // Finally, pick a random ip from the result, and restart the loop. If no such
+        // record is available, it returns the last result received.
         if let Some(new_ns) = recursive_response.get_random_a() {
             ns = new_ns;
         } else {
