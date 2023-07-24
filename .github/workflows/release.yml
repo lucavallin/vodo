@@ -3,17 +3,23 @@ name: Build and Release
 on:
   push:
     tags:
-      - v*.*.*
-
-permissions:
-  contents: write
+      - '*'
 
 jobs:
   build:
     strategy:
       matrix:
-        os: [[ubuntu-latest, linux64, ""], [windows-latest, win64, ".exe"], [macos-latest, macos-intel, ""], [macos-arm64, macos-arm, ""]]
-    runs-on: ${{ matrix.os[0] }}
+        include:
+          - os: ubuntu-latest
+            artifact_name: ${{ github.event.repository.name }}
+            asset_name: ${{ github.event.repository.name }}-linux-amd64
+          - os: windows-latest
+            artifact_name: ${{ github.event.repository.name }}.exe
+            asset_name: ${{ github.event.repository.name }}-windows-amd64
+          - os: macos-latest
+            artifact_name: ${{ github.event.repository.name }}
+            asset_name: ${{ github.event.repository.name }}-macos-amd64
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -24,21 +30,10 @@ jobs:
       - name: Build release
         run: >-
           cargo build --release
-      - uses: actions/upload-artifact@v3
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          name: ${{ github.repository.name }}-${{ matrix.os[1] }}${{ matrix.os[2] }}
-          path: ./target/release/${{ github.repository.name }}${{ matrix.os[2] }}
-  # release:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Create release
-  #       id: create_release
-  #       uses: actions/create-release@v1
-  #       env:
-  #         GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-  #       with:
-  #         tag_name: '${{ github.ref }}'
-  #         release_name: 'Release ${{ github.ref }}'
-  #         draft: false
-  #         prerelease: false
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: target/release/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
