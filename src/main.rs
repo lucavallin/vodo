@@ -16,7 +16,7 @@ use simplelog::*;
 use std::{error::Error, net::UdpSocket};
 
 #[derive(Parser, Debug)]
-#[command(name = env!("CARGO_PKG_NAME"), version = env!("CARGO_PKG_VERSION"), author = env!("CARGO_PKG_AUTHORS"), about = env!("CARGO_PKG_DESCRIPTION"))]
+#[command(author, version, about)]
 struct Args {
     /// Port for the server to listen on
     #[arg(short, long = "port", default_value_t = 5353)]
