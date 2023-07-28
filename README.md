@@ -87,3 +87,5 @@ $ make query [hostname=example.com]
 - Run `cargo clippy -- -W clippy::pedantic` for pedantic errors.
 - Consider async/await with tokio.rs (`header.rs` and `packet.rs` could use [tokio_util::codec](https://docs.rs/tokio-util/latest/tokio_util/codec/index.html))
 - Consider replacing the `as u16` casts with `try_into()` to reduce overflow risk.
+- Consider using `Ipv4Addr::from(raw_addr.to_be_bytes())` to convert raw bytes to an IPv4 address (IPv6 might require more work).
+- Consider using crate `bitvec` for bit manipulation.
