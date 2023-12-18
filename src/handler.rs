@@ -3,10 +3,10 @@ use rand::Rng;
 use std::net::{Ipv4Addr, UdpSocket};
 
 use crate::{
+    buffer::{Buffer, BufferError},
     packet::DnsPacket,
-    pb::{BufferError, PacketBuffer},
     question::{DnsQuestion, QueryType},
-    rc::ResultCode,
+    resultcode::ResultCode,
 };
 
 /// IP of *a.root-servers.net*
@@ -18,7 +18,7 @@ const LOOKUP_SOCKET_PORT: u16 = 42069;
 /// It receives a DNS query from the socket, and sends a response back.
 /// If an error occurs, it returns the error.
 pub fn handle_query(socket: &UdpSocket) -> Result<(), BufferError> {
-    let mut req_buffer = PacketBuffer::new();
+    let mut req_buffer = Buffer::new();
     let (_, src) = socket.recv_from(&mut req_buffer.buf)?;
 
     let mut request = DnsPacket::from_buffer(&mut req_buffer)?;
@@ -55,7 +55,7 @@ pub fn handle_query(socket: &UdpSocket) -> Result<(), BufferError> {
         packet.header.rescode = ResultCode::FORMERR;
     }
 
-    let mut res_buffer = PacketBuffer::new();
+    let mut res_buffer = Buffer::new();
     packet.write(&mut res_buffer)?;
 
     let len = res_buffer.pos();
@@ -87,11 +87,11 @@ fn lookup(
         .questions
         .push(DnsQuestion::new(qname.to_string(), qtype));
 
-    let mut req_buffer = PacketBuffer::new();
+    let mut req_buffer = Buffer::new();
     packet.write(&mut req_buffer)?;
     socket.send_to(&req_buffer.buf[0..req_buffer.pos], server)?;
 
-    let mut res_buffer = PacketBuffer::new();
+    let mut res_buffer = Buffer::new();
     socket.recv_from(&mut res_buffer.buf)?;
 
     DnsPacket::from_buffer(&mut res_buffer)

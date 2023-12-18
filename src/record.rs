@@ -1,4 +1,4 @@
-use crate::pb::{BufferError, PacketBuffer};
+use crate::buffer::{Buffer, BufferError};
 use crate::question::QueryType;
 use log::info;
 use std::net::{Ipv4Addr, Ipv6Addr};
@@ -45,7 +45,7 @@ pub enum DnsRecord {
 impl DnsRecord {
     /// Reads a DNS record from a buffer
     #[allow(clippy::identity_op, clippy::redundant_field_names)]
-    pub fn read(buffer: &mut PacketBuffer) -> Result<DnsRecord, BufferError> {
+    pub fn read(buffer: &mut Buffer) -> Result<DnsRecord, BufferError> {
         let mut domain = String::new();
         buffer.read_qname(&mut domain)?;
 
@@ -146,7 +146,7 @@ impl DnsRecord {
         }
     }
 
-    pub fn write(&self, buffer: &mut PacketBuffer) -> Result<usize, BufferError> {
+    pub fn write(&self, buffer: &mut Buffer) -> Result<usize, BufferError> {
         let start_pos = buffer.pos();
 
         match *self {

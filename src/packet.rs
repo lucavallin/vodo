@@ -1,7 +1,7 @@
 use std::net::Ipv4Addr;
 
+use crate::buffer::{Buffer, BufferError};
 use crate::header::DnsHeader;
-use crate::pb::{BufferError, PacketBuffer};
 use crate::question::DnsQuestion;
 use crate::question::QueryType;
 use crate::record::DnsRecord;
@@ -27,12 +27,12 @@ impl DnsPacket {
     }
 
     /// Reads a DNS packet from a buffer
-    pub fn from_buffer(buffer: &mut PacketBuffer) -> Result<DnsPacket, BufferError> {
+    pub fn from_buffer(buffer: &mut Buffer) -> Result<DnsPacket, BufferError> {
         let mut result = DnsPacket::new();
         result.header.read(buffer)?;
 
         for _ in 0..result.header.questions {
-            let mut question = DnsQuestion::new("".to_string(), QueryType::UNKNOWN(0));
+            let mut question = DnsQuestion::new(String::new(), QueryType::UNKNOWN(0));
             question.read(buffer)?;
             result.questions.push(question);
         }
@@ -54,7 +54,7 @@ impl DnsPacket {
     }
 
     /// Writes a DNS packet to a buffer
-    pub fn write(&mut self, buffer: &mut PacketBuffer) -> Result<(), BufferError> {
+    pub fn write(&mut self, buffer: &mut Buffer) -> Result<(), BufferError> {
         self.header.questions = self.questions.len() as u16;
         self.header.answers = self.answers.len() as u16;
         self.header.authoritative_entries = self.authorities.len() as u16;

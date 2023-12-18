@@ -1,4 +1,4 @@
-use crate::pb::{BufferError, PacketBuffer};
+use crate::buffer::{Buffer, BufferError};
 
 /// 1, 2, 5, 15, 28 are IDs of the query types as defined in RFC 1035:
 /// see https://tools.ietf.org/html/rfc1035#section-3.2.2
@@ -48,7 +48,7 @@ impl DnsQuestion {
         DnsQuestion { name, qtype }
     }
 
-    pub fn read(&mut self, buffer: &mut PacketBuffer) -> Result<(), BufferError> {
+    pub fn read(&mut self, buffer: &mut Buffer) -> Result<(), BufferError> {
         buffer.read_qname(&mut self.name)?;
         self.qtype = QueryType::from_num(buffer.read_u16()?);
         // DNS question class, in practice always equal to 1:
@@ -58,7 +58,7 @@ impl DnsQuestion {
         Ok(())
     }
 
-    pub fn write(&self, buffer: &mut PacketBuffer) -> Result<(), BufferError> {
+    pub fn write(&self, buffer: &mut Buffer) -> Result<(), BufferError> {
         buffer.write_qname(&self.name)?;
 
         let typenum = self.qtype.to_num();

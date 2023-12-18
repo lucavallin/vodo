@@ -1,4 +1,4 @@
-/// BufferError is an enum that represents the various errors that can occur
+/// `BufferError` is an enum that represents the various errors that can occur
 #[derive(thiserror::Error, Debug, Clone)]
 pub enum BufferError {
     #[error("End of buffer")]
@@ -11,25 +11,25 @@ pub enum BufferError {
     GenericError(String),
 }
 
-/// Implement the From trait for BufferError, so that we can use the ? operator
+/// Implement the From trait for `BufferError`, so that we can use the ? operator
 impl From<std::io::Error> for BufferError {
     fn from(e: std::io::Error) -> Self {
         BufferError::GenericError(e.to_string())
     }
 }
 
-/// The `PacketBuffer` struct is used to hold the contents of a DNS packet as a byte buffer,
+/// The `Buffer` struct is used to hold the contents of a DNS packet as a byte buffer,
 /// and provides methods for reading and manipulating the buffer contents.
-pub struct PacketBuffer {
+pub struct Buffer {
     pub buf: [u8; 512],
     pub pos: usize,
 }
 
-impl PacketBuffer {
+impl Buffer {
     /// This gives us a fresh buffer for holding the packet contents, and a
     /// field for keeping track of where we are.
-    pub fn new() -> PacketBuffer {
-        PacketBuffer {
+    pub fn new() -> Buffer {
+        Buffer {
             buf: [0; 512],
             pos: 0,
         }
@@ -83,7 +83,7 @@ impl PacketBuffer {
 
     /// Read two bytes, stepping two steps forward
     pub fn read_u16(&mut self) -> Result<u16, BufferError> {
-        let res = ((self.read()? as u16) << 8) | (self.read()? as u16);
+        let res = (u16::from(self.read()?) << 8) | u16::from(self.read()?);
 
         Ok(res)
     }
@@ -91,10 +91,10 @@ impl PacketBuffer {
     /// Read four bytes, stepping four steps forward
     #[allow(clippy::identity_op)]
     pub fn read_u32(&mut self) -> Result<u32, BufferError> {
-        let res = ((self.read()? as u32) << 24)
-            | ((self.read()? as u32) << 16)
-            | ((self.read()? as u32) << 8)
-            | ((self.read()? as u32) << 0);
+        let res = (u32::from(self.read()?) << 24)
+            | (u32::from(self.read()?) << 16)
+            | (u32::from(self.read()?) << 8)
+            | (u32::from(self.read()?) << 0);
 
         Ok(res)
     }
@@ -144,8 +144,8 @@ impl PacketBuffer {
 
                 // Read another byte, calculate offset and perform the jump by
                 // updating our local position variable
-                let b2 = self.get(pos + 1)? as u16;
-                let offset = (((len as u16) ^ 0xC0) << 8) | b2;
+                let b2 = u16::from(self.get(pos + 1)?);
+                let offset = ((u16::from(len) ^ 0xC0) << 8) | b2;
                 pos = offset as usize;
 
                 // Indicate that a jump was performed.
@@ -189,7 +189,7 @@ impl PacketBuffer {
     }
 
     /// The write function writes a single byte to the buffer at the current position.
-    /// If the buffer is already full, it returns an EndOfBuffer error.
+    /// If the buffer is already full, it returns an `EndOfBuffer` error.
     pub fn write(&mut self, val: u8) -> Result<(), BufferError> {
         if self.pos >= 512 {
             return Err(BufferError::EndOfBuffer);
@@ -199,14 +199,14 @@ impl PacketBuffer {
         Ok(())
     }
 
-    /// write_u8 writes a single byte to the buffer at the current position.
+    /// `write_u8` writes a single byte to the buffer at the current position.
     pub fn write_u8(&mut self, val: u8) -> Result<(), BufferError> {
         self.write(val)?;
 
         Ok(())
     }
 
-    /// write_u16 writes two bytes to the buffer at the current position.
+    /// `write_u16` writes two bytes to the buffer at the current position.
     /// The most significant byte is written first.
     pub fn write_u16(&mut self, val: u16) -> Result<(), BufferError> {
         self.write((val >> 8) as u8)?;
@@ -215,20 +215,20 @@ impl PacketBuffer {
         Ok(())
     }
 
-    /// write_u32 writes four bytes to the buffer at the current position.
+    /// `write_u32` writes four bytes to the buffer at the current position.
     /// The most significant byte is written first.
     /// This is useful for writing IPv4 addresses.
-    /// #[allow(clippy::identity_op)]
+    /// #[`allow(clippy::identity_op`)]
     pub fn write_u32(&mut self, val: u32) -> Result<(), BufferError> {
         self.write(((val >> 24) & 0xFF) as u8)?;
         self.write(((val >> 16) & 0xFF) as u8)?;
         self.write(((val >> 8) & 0xFF) as u8)?;
-        self.write(((val >> 0) & 0xFF) as u8)?;
+        self.write((val & 0xFF) as u8)?;
 
         Ok(())
     }
 
-    /// write_qname writes query names in labeled form
+    /// `write_qname` writes query names in labeled form
     pub fn write_qname(&mut self, qname: &str) -> Result<(), BufferError> {
         for label in qname.split('.') {
             // ox3f is 0011 1111 in binary, so we can use it to check if the label is longer than 63 characters
@@ -255,7 +255,7 @@ impl PacketBuffer {
         Ok(())
     }
 
-    /// set_u16 writes two bytes to the buffer at the specified position.
+    /// `set_u16` writes two bytes to the buffer at the specified position.
     /// The most significant byte is written first.
     pub fn set_u16(&mut self, pos: usize, val: u16) -> Result<(), BufferError> {
         self.set(pos, (val >> 8) as u8)?;

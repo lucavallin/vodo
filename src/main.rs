@@ -1,18 +1,15 @@
+mod buffer;
 mod handler;
 mod header;
 mod packet;
-mod pb;
 mod question;
-mod rc;
 mod record;
-
-#[macro_use]
-extern crate log;
-extern crate simplelog;
+mod resultcode;
 
 use clap::Parser;
 use handler::handle_query;
-use simplelog::*;
+use log::{info, warn};
+use simplelog::{ColorChoice, Config, LevelFilter, TermLogger, TerminalMode};
 use std::{error::Error, net::UdpSocket};
 
 #[derive(Parser, Debug)]
@@ -44,7 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     info!("DNS server is listening on port {}...", args.port);
     loop {
         match handle_query(&socket) {
-            Ok(_) => {}
+            Ok(()) => {}
             Err(e) => warn!("An error occurred: {}", e),
         }
     }
