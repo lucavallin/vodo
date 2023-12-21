@@ -1,5 +1,5 @@
 /// `BufferError` is an enum that represents the various errors that can occur
-#[derive(thiserror::Error, Debug, Clone)]
+#[derive(thiserror::Error, Debug)]
 pub enum BufferError {
     #[error("End of buffer")]
     EndOfBuffer,
@@ -7,15 +7,8 @@ pub enum BufferError {
     JumpsLimitExceeded(i32),
     #[error("Single label exceeds 63 characters of length")]
     LabelTooLong,
-    #[error("Generic error: {0}")]
-    GenericError(String),
-}
-
-/// Implement the From trait for `BufferError`, so that we can use the ? operator
-impl From<std::io::Error> for BufferError {
-    fn from(e: std::io::Error) -> Self {
-        BufferError::GenericError(e.to_string())
-    }
+    #[error("I/O error: {0}")]
+    IoError(#[from] std::io::Error),
 }
 
 /// The `Buffer` struct is used to hold the contents of a DNS packet as a byte buffer,

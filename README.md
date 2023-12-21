@@ -78,7 +78,5 @@ $ make query [hostname=example.com]
 
 ## Improvements
 
-- Use [tokio-rs/bytes](https://github.com/tokio-rs/bytes) for handling buffers.
-- Replace `BufferError::GenericError(String)` with `#[error("I/O error: {0}")] IoError(#[from] std::io::Error)`
+- Use [tokio-rs/bytes](https://github.com/tokio-rs/bytes) for handling buffers and `bitvec` for bit manipulation.
 - Async/await with tokio.rs (`header.rs` and `packet.rs` could use [tokio_util::codec](https://docs.rs/tokio-util/latest/tokio_util/codec/index.html))
-- Consider using crate `bitvec` for bit manipulation.
